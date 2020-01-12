@@ -8,9 +8,9 @@ class WalletRpcClient(RpcClient):
         super().__init__(network.wallet_url)
         self.network = network
 
-    def post(self, method, params):
+    def post_json_rpc(self, method, params):
         try:
-            return super().post(method, params)
+            return super().post('/json_rpc', method, params)
         except ConnectionError:
             exit('Wallet RPC not running')
 
@@ -28,11 +28,17 @@ class WalletRpcClient(RpcClient):
             "account_index": 0,
             "subaddr_indices": [0],
             "priority": 0,
-            "ring_size": ring_size,
+            "mixin": ring_size-1,
             "get_tx_key": True
         }
-        res = self.post('transfer', params)
-        print('Sent ' + str(res['amount']) + ' piconero in transaction ' + res['tx_hash'])
+        res = self.post_json_rpc('transfer', params)
+        return res
 
     def get_balance(self):
-        return self.post('get_balance', {'account_index': 0})
+        return self.post_json_rpc('get_balance', {'account_index': 0})
+
+    def get_incoming_transfers(self):
+        try:
+            return self.post_json_rpc('incoming_transfers', {"transfer_type": "all", "verbose": True})['transfers']
+        except KeyError:
+            return None

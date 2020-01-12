@@ -5,20 +5,37 @@ import json
 class RpcClient:
 
     def __init__(self, url):
-        self.URL = url + '/json_rpc'
+        self.URL = url
 
-    def post(self, method, params):
-        data = {
-            "jsonrpc": "2.0",
-            "id": "0",
-            "method": method,
-            "params": params
-        }
+    @staticmethod
+    def json_rpc_result(res):
+        return res['result']
+
+    @staticmethod
+    def other_result(res):
+        result = {}
+        for o in res:
+            if o != 'status' and o != 'untrusted':
+                result.update({o: res[o]})
+        return result
+
+    def post(self, context, method, params):
+        if context == '/json_rpc':
+            data = {
+                "jsonrpc": "2.0",
+                "id": "0",
+                "method": method,
+                "params": params
+            }
+            extract_result = self.json_rpc_result
+        else:
+            data = params
+            extract_result = self.other_result
+
         try:
-            r = requests.post(self.URL, data=json.dumps(data), headers={'Content-Type': 'application/json'})
+            r = requests.post(self.URL + context, data=json.dumps(data), headers={'Content-Type': 'application/json'})
             try:
-                res = json.loads(r.content)['result']
-                return res
+                return extract_result(json.loads(r.content))
             except KeyError:
                 return None
         except requests.exceptions.ConnectionError:
