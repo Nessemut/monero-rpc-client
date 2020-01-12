@@ -10,12 +10,15 @@ class BlockchainUtils:
     def get_tx_count(self):
         return self.daemon.get_info()['tx_count']
 
-    def print_blockchain(self):
+    def get_blockchain_array(self):
         height = self.get_height()
+        blocks = []
 
         try:
             for i in range(height-1, 0, -1):
                 block = self.daemon.get_block(i)
-                print(block)
+                blocks.append(block)
         except KeyboardInterrupt:
             pass
+
+        return blocks
