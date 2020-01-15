@@ -1,3 +1,6 @@
+import logging
+
+
 class BlockchainUtils:
 
     def __init__(self, wallet, daemon):
@@ -22,3 +25,10 @@ class BlockchainUtils:
             pass
 
         return blocks
+
+    @staticmethod
+    def get_outputs_from_index_array(array):
+        for i in range(0, len(array)):
+            if i != 0:
+                array[i] = array[i] + array[i-1]
+        return array

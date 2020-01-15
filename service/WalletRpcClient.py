@@ -28,7 +28,7 @@ class WalletRpcClient(RpcClient):
             "account_index": 0,
             "subaddr_indices": [0],
             "priority": 0,
-            "mixin": ring_size-1,
+            "ring_size": ring_size,
             "get_tx_key": True
         }
         res = self.post_json_rpc('transfer', params)
