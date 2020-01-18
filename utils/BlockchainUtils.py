@@ -1,4 +1,5 @@
-import logging
+from classes.Output import Output
+from networks import CURRENT_WALLET_NAME
 
 
 class BlockchainUtils:
@@ -32,3 +33,20 @@ class BlockchainUtils:
             if i != 0:
                 array[i] = array[i] + array[i-1]
         return array
+
+    def get_incoming_transfers_output_array(self):
+        output_array = []
+        incoming_transfers = self.wallet.get_incoming_transfers()
+        for transfer in incoming_transfers:
+            output = Output(
+                self.daemon.get_outs(transfer['amount'], transfer['global_index'])['key'],
+                transfer['tx_hash'],
+                transfer['key_image'],
+                transfer['amount'],
+                transfer['global_index'],
+                None,
+                transfer['spent'],
+                None
+            )
+            output_array.append(output)
+        return output_array

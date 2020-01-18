@@ -66,11 +66,15 @@ class DaemonRpcClient(RpcClient):
             transactions.append(tx_dict)
         return transactions
 
-    def get_outputs(self, amount, index):
+    def get_outs(self, amount, index):
         if index is None:
             index = 0
         try:
             res = self.post_other('/get_outs', {'outputs': [{'amount': amount, 'index': index}]})
         except KeyError:
             return None
-        return res['outs']
+        return res['outs'][0]
+
+    def is_key_image_spent(self, key_image):
+        res = self.post_other('/is_key_image_spent', {'key_images': [key_image]})
+        return res['spent_status'][0] == 1
