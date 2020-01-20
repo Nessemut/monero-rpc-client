@@ -1,5 +1,4 @@
 from classes.Output import Output
-from networks import CURRENT_WALLET_NAME
 
 
 class BlockchainUtils:
@@ -33,6 +32,24 @@ class BlockchainUtils:
             if i != 0:
                 array[i] = array[i] + array[i-1]
         return array
+
+    def get_all_coinbase_outputs_array(self, blockchain):
+        output_array = []
+        for block in blockchain:
+            outs = block['miner_tx']['vout']
+            for out in outs:
+                output = Output(
+                    out['target']['key'],
+                    None,
+                    None,
+                    out['amount'],
+                    None,
+                    None,
+                    None,
+                    None
+                )
+                output_array.append(output)
+        return output_array
 
     def get_incoming_transfers_output_array(self):
         output_array = []

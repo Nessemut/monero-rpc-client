@@ -9,6 +9,7 @@ class NetType:
         self.wallet_dir = base_dir + '/wallets/'
         self.wallet_rpc_log_dir = base_dir + '/wallet-rpc-logs/'
         self.address_book = self.load_address_book()
+        self.database = base_dir + '/monero.db'
 
     def load_address_book(self):
         address_book = {}

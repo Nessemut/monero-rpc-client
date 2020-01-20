@@ -2,9 +2,6 @@ from classes.NetType import NetType
 import config
 
 
-CURRENT_WALLET_NAME = 'dave'
-
-
 MAINNET = NetType(
     config.MAINNET_NODE,
     config.MAINNET_WALLET_RPC_URL,

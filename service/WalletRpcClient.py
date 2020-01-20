@@ -1,5 +1,4 @@
 from .RpcClient import RpcClient
-import config
 
 
 class WalletRpcClient(RpcClient):
@@ -13,6 +12,9 @@ class WalletRpcClient(RpcClient):
             return super().post('/json_rpc', method, params)
         except ConnectionError:
             exit('Wallet RPC not running')
+
+    def get_address(self):
+        return self.post_json_rpc('get_address', {'account_index': 0})['address']
 
     def transfer(self, amount, ring_size, dest):
         try:
