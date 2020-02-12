@@ -1,4 +1,6 @@
 from classes.Output import Output
+from time import sleep
+import random
 
 
 class BlockchainUtils:
@@ -13,12 +15,19 @@ class BlockchainUtils:
     def get_tx_count(self):
         return self.daemon.get_info()['tx_count']
 
-    def get_blockchain_array(self):
+    def get_blockchain_array(self, first, last):
         height = self.get_height()
+
+        if first is None or first > height or first < 0:
+            first = 0
+
+        if last is None or last > height or last < first:
+            last = height
+
         blocks = []
 
         try:
-            for i in range(height-1, 0, -1):
+            for i in range(last-1, first, -1):
                 block = self.daemon.get_block(i)
                 blocks.append(block)
         except KeyboardInterrupt:
@@ -33,7 +42,16 @@ class BlockchainUtils:
                 array[i] = array[i] + array[i-1]
         return array
 
-    def get_all_coinbase_outputs_array(self, blockchain):
+    def execute_once_a_block(self, function):
+        last_updated_height = self.get_height()
+        while True:
+            if last_updated_height != self.get_height():
+                function()
+                last_updated_height = self.get_height()
+            sleep(5)
+
+    @staticmethod
+    def get_all_coinbase_outputs_array(blockchain):
         output_array = []
         for block in blockchain:
             outs = block['miner_tx']['vout']

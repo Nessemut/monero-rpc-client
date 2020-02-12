@@ -49,17 +49,21 @@ class DaemonRpcClient(RpcClient):
         return self.post_json_rpc('get_fee_estimate', None)
 
     def get_transactions(self, transactions):
-        res = self.post_other('/get_transactions', {'txs_hashes': transactions})['txs']
+        res = self.post_other('/get_transactions', {'txs_hashes': transactions, 'decode_as_json': True})['txs']
         transactions = []
         for tx in res:
             tx_dict = {}
             if not tx['in_pool']:
+                json_decoded_tx = json.loads(tx['as_json'].replace('\n', ''))
                 tx_dict.update({'tx_hash': tx['tx_hash']})
                 tx_dict.update({'block_height': tx['block_height']})
                 tx_dict.update({'block_timestamp': tx['block_timestamp']})
                 tx_dict.update({'double_spend_seen': tx['double_spend_seen']})
                 tx_dict.update({'in_pool': False})
                 tx_dict.update({'output_indices': tx['output_indices']})
+                tx_dict.update({'vin': json_decoded_tx['vin']})
+                tx_dict.update({'vout': json_decoded_tx['vout']})
+                tx_dict.update({'signatures': json_decoded_tx['signatures']})
             else:
                 # TODO: return transaction when it is not yet mined
                 pass

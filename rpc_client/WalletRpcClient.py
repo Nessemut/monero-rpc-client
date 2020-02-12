@@ -16,11 +16,8 @@ class WalletRpcClient(RpcClient):
     def get_address(self):
         return self.post_json_rpc('get_address', {'account_index': 0})['address']
 
-    def transfer(self, amount, ring_size, dest):
-        try:
-            wallet = self.network.address_book[dest]
-        except KeyError:
-            exit('User ' + dest + ' does not exist')
+    def transfer(self, amount, ring_size, wallet):
+
         params = {
             "destinations": [
                 {"amount": amount,
