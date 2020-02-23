@@ -6,6 +6,7 @@ class WalletRpcClient(RpcClient):
     def __init__(self, network):
         super().__init__(network.wallet_url)
         self.network = network
+        self.address = self.get_address()
 
     def post_json_rpc(self, method, params):
         try:

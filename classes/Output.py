@@ -13,9 +13,10 @@ class Output(Base):
     index = Column(Integer)
     coinbase = Column(Boolean)
     spent = Column(Boolean)
-    wallet = Column(String)
+    sender = Column(String)
+    recipient = Column(String)
 
-    def __init__(self, key, tx, key_image, amount, index, coinbase, spent, wallet):
+    def __init__(self, key, tx, key_image, amount, index, coinbase, spent, sender, recipient):
         self.key = key
         self.tx = tx
         self.key_image = key_image
@@ -23,7 +24,8 @@ class Output(Base):
         self.index = index
         self.coinbase = coinbase
         self.spent = spent
-        self.wallet = wallet
+        self.sender = sender
+        self.recipient = recipient
 
     def is_attr_known(self, attr):
         return self.__getattribute__(attr) is not None

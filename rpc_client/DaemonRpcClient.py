@@ -54,16 +54,19 @@ class DaemonRpcClient(RpcClient):
         for tx in res:
             tx_dict = {}
             if not tx['in_pool']:
-                json_decoded_tx = json.loads(tx['as_json'].replace('\n', ''))
-                tx_dict.update({'tx_hash': tx['tx_hash']})
-                tx_dict.update({'block_height': tx['block_height']})
-                tx_dict.update({'block_timestamp': tx['block_timestamp']})
-                tx_dict.update({'double_spend_seen': tx['double_spend_seen']})
-                tx_dict.update({'in_pool': False})
-                tx_dict.update({'output_indices': tx['output_indices']})
-                tx_dict.update({'vin': json_decoded_tx['vin']})
-                tx_dict.update({'vout': json_decoded_tx['vout']})
-                tx_dict.update({'signatures': json_decoded_tx['signatures']})
+                try:
+                    json_decoded_tx = json.loads(tx['as_json'].replace('\n', ''))
+                    tx_dict.update({'tx_hash': tx['tx_hash']})
+                    tx_dict.update({'block_height': tx['block_height']})
+                    tx_dict.update({'block_timestamp': tx['block_timestamp']})
+                    tx_dict.update({'double_spend_seen': tx['double_spend_seen']})
+                    tx_dict.update({'in_pool': False})
+                    tx_dict.update({'output_indices': tx['output_indices']})
+                    tx_dict.update({'vin': json_decoded_tx['vin']})
+                    tx_dict.update({'vout': json_decoded_tx['vout']})
+                    tx_dict.update({'signatures': json_decoded_tx['signatures']})
+                except KeyError:
+                    pass
             else:
                 # TODO: return transaction when it is not yet mined
                 pass
@@ -74,10 +77,17 @@ class DaemonRpcClient(RpcClient):
         if index is None:
             index = 0
         try:
-            res = self.post_other('/get_outs', {'outputs': [{'amount': amount, 'index': index}]})
+            if amount == 0:
+                res = self.post_other('/get_outs', {'outputs': [{'index': index}]})
+            else:
+                res = self.post_other('/get_outs', {'outputs': [{'amount': amount, 'index': index}]})
         except KeyError:
             return None
-        return res['outs'][0]
+        try:
+            out = res['outs'][0]
+        except KeyError:
+            out = None
+        return out
 
     def is_key_image_spent(self, key_image):
         res = self.post_other('/is_key_image_spent', {'key_images': [key_image]})
