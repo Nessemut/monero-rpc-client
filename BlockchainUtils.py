@@ -1,4 +1,4 @@
-from classes.Output import Output
+from model import Output
 from time import sleep
 import random
 
@@ -31,9 +31,10 @@ class BlockchainUtils:
         try:
             for i in range(last-1, first, -1):
                 if i % 100 == 0:
-                    print(-i-first/total)
+                    print(str("%0.2f" % (100*(last-i)/total)) + '% completed')
                 block = self.daemon.get_block(i)
                 blocks.append(block)
+            print('Finished')
         except KeyboardInterrupt:
             pass
 
@@ -65,12 +66,12 @@ class BlockchainUtils:
                 output = Output(
                     out['target']['key'],
                     None,
-                    None,
                     out['amount'],
                     None,
+                    True,
+                    False,
                     None,
-                    None,
-                    None,
+                    "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                     None
                 )
                 output_array.append(output)
@@ -83,10 +84,10 @@ class BlockchainUtils:
             # TODO: add logic to make this able to handle both v1 and v2 transactions
             output = Output(
                 self.daemon.get_outs(None, transfer['global_index'])['key'],
-                transfer['tx_hash'],
                 transfer['key_image'],
                 transfer['amount'],
                 transfer['global_index'],
+                None,
                 None,
                 transfer['spent'],
                 None,

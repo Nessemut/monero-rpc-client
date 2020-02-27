@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
-from classes.Output import Output
+from sqlite3 import OperationalError
 
 
 class OutputService:
@@ -20,6 +20,8 @@ class OutputService:
                 s.commit()
             except IntegrityError:
                 s.rollback()
+            except OperationalError:
+                print('Database is locked')
 
         s.close()
 

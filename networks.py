@@ -1,4 +1,4 @@
-from classes.NetType import NetType
+from NetType import NetType
 import config
 
 
