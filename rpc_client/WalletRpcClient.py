@@ -42,3 +42,6 @@ class WalletRpcClient(RpcClient):
             return self.post_json_rpc('incoming_transfers', {"transfer_type": "all", "verbose": True})['transfers']
         except KeyError:
             return None
+
+    def rescan_blockchain(self):
+        return self.post_json_rpc('rescan_blockchain', {})
