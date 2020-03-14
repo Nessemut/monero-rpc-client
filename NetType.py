@@ -3,13 +3,13 @@ import os
 
 class NetType:
 
-    def __init__(self, daemon_url, wallet_url, base_dir):
+    def __init__(self, daemon_url, wallet_url, base_dir, mysql_schema):
         self.daemon_url = daemon_url
         self.wallet_url = wallet_url
         self.wallet_dir = base_dir + '/wallets/'
         self.wallet_rpc_log_dir = base_dir + '/wallet-rpc-logs/'
         self.address_book = self.load_address_book()
-        self.database = base_dir + '/monero.db'
+        self.mysql_schema = mysql_schema
 
     def load_address_book(self):
         address_book = {}

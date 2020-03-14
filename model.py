@@ -6,7 +6,7 @@ Base = declarative_base()
 
 
 association_table = Table(
-    'association', Base.metadata,
+    'association_table', Base.metadata,
     Column('output_pubkey', String, ForeignKey('output.key')),
     Column('ring_ki', String, ForeignKey('ring.key_image')),
     Column('real', Boolean)
@@ -15,25 +15,26 @@ association_table = Table(
 
 class Output(Base):
     __tablename__ = 'output'
-    key = Column(String, primary_key=True)
+    key = Column(String, primary_key=True, unique=True, nullable=False)
     key_image = Column(String)
     amount = Column(Integer)
-    index = Column(Integer)
-    coinbase = Column(Boolean)
-    ringct = Column(Boolean)
-    spent = Column(Boolean)
+    idx = Column(Integer)
+    coinbase = Column(Boolean, nullable=True, default=None)
+    ringct = Column(Boolean, nullable=True, default=None)
+    spent = Column(Boolean, nullable=True, default=None)
     sender = Column(String)
     recipient = Column(String)
     rings = relationship(
         "Ring",
         secondary=association_table,
-        back_populates="outputs")
+        back_populates="outputs",
+        lazy='joined')
 
     def __init__(self, key, key_image, amount, index, coinbase, ringct, spent, sender, recipient):
         self.key = key
         self.key_image = key_image
         self.amount = amount
-        self.index = index
+        self.idx = index
         self.coinbase = coinbase
         self.ringct = ringct
         self.spent = spent
@@ -46,13 +47,16 @@ class Output(Base):
 
 class Ring(Base):
     __tablename__ = 'ring'
-    key_image = Column(String, primary_key=True)
+    key_image = Column(String, primary_key=True, unique=True, nullable=False)
+    transaction = Column(String)
+    height = Column(Integer)
     outputs = relationship(
         "Output",
         secondary=association_table,
-        back_populates="rings")
+        back_populates="rings",
+        lazy='joined')
 
-    def __init__(self, key, tx, key_image):
-        self.key = key
-        self.tx = tx
+    def __init__(self, key_image, transaction, height):
         self.key_image = key_image
+        self.transaction = transaction
+        self.height = height

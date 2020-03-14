@@ -1,26 +1,46 @@
-from service.DaemonRpcClient import DaemonRpcClient
-from service.WalletRpcClient import WalletRpcClient
-from utils.BlockchainUtils import BlockchainUtils
-from networks import TESTNET
+from rpc_client.DaemonRpcClient import DaemonRpcClient
+from rpc_client.WalletRpcClient import WalletRpcClient
+from BlockchainUtils import BlockchainUtils
+from networks import STAGENET
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from dao import Dao
+import config
+from gc import collect
 
-
-network = TESTNET
+network = STAGENET
 
 daemon = DaemonRpcClient(network)
 wallet = WalletRpcClient(network)
+engine = create_engine('mysql+pymysql://{}@{}/{}'.format(config.MYSQL_USER, config.MYSQL_URL, network.mysql_schema))
+dao = Dao(engine)
+bcutil = BlockchainUtils(wallet, daemon, network, dao)
 
 
-bc = BlockchainUtils(wallet, daemon)
+def inject(n):
+    for i in range(0, n):
+        bcutil.send_one_nanonero_to_myself()
 
 
-engine = create_engine('sqlite:///' + network.database, echo=True)
-Session = sessionmaker()
-Session.configure(bind=engine)
-session = Session()
+def persist_outputs():
+    height = int(bcutil.get_height())
+    interval = 5000
+    for i in range(0, height, interval):
+        blocks = bcutil.get_blockchain_array(i, i+interval-1)
+        bcutil.persist_coinbase_transactions(blocks)
+        collect()
 
-# do stuff here
+    bcutil.persist_incoming_transfers()
 
-session.commit()
-session.close()
+
+def persist_rings():
+    height = int(bcutil.get_height())
+    interval = 10
+    for i in range(137000, height, interval):
+        blocks = bcutil.get_blockchain_array(i, i+interval-1)
+        bcutil.persist_rings(blocks)
+
+
+def get_blockchain():
+    blocks = bcutil.get_blockchain_array(None, None)
+    return blocks
+
