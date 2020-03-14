@@ -19,6 +19,8 @@ bcutil = BlockchainUtils(wallet, daemon, network, dao)
 def inject(n):
     for i in range(0, n):
         bcutil.send_one_nanonero_to_myself()
+        if i % 25 == 0:
+            wallet.rescan_blockchain()
 
 
 def persist_outputs():
@@ -43,4 +45,3 @@ def persist_rings():
 def get_blockchain():
     blocks = bcutil.get_blockchain_array(None, None)
     return blocks
-
