@@ -22,15 +22,13 @@ class Output(Base):
     coinbase = Column(Boolean, nullable=True, default=None)
     ringct = Column(Boolean, nullable=True, default=None)
     spent = Column(Boolean, nullable=True, default=None)
-    sender = Column(String)
-    recipient = Column(String)
     rings = relationship(
         "Ring",
         secondary=association_table,
         back_populates="outputs",
         lazy='joined')
 
-    def __init__(self, key, key_image, amount, index, coinbase, ringct, spent, sender, recipient):
+    def __init__(self, key, key_image, amount, index, coinbase, ringct, spent):
         self.key = key
         self.key_image = key_image
         self.amount = amount
@@ -38,8 +36,6 @@ class Output(Base):
         self.coinbase = coinbase
         self.ringct = ringct
         self.spent = spent
-        self.sender = sender
-        self.recipient = recipient
 
     def is_attr_known(self, attr):
         return self.__getattribute__(attr) is not None

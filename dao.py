@@ -14,11 +14,11 @@ class Dao:
         s = session()
 
         for output in outputs:
-            s.add(output)
-        try:
-            s.commit()
-        except (IntegrityError, InvalidRequestError):
-            s.rollback()
+            try:
+                s.add(output)
+                s.commit()
+            except (IntegrityError, InvalidRequestError):
+                s.rollback()
 
         s.close()
 

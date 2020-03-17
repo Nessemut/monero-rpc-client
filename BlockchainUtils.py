@@ -58,7 +58,6 @@ class BlockchainUtils:
             sleep(5)
 
     def persist_coinbase_transactions(self, blockchain):
-        sender = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         output_array = []
         for block in blockchain:
             outs = block['miner_tx']['vout']
@@ -73,8 +72,6 @@ class BlockchainUtils:
                         None,
                         True,
                         False,
-                        None,
-                        sender,
                         None
                     )
                 else:
@@ -100,9 +97,7 @@ class BlockchainUtils:
                     transfer['global_index'],
                     None,
                     None,
-                    transfer['spent'],
-                    None,
-                    self.wallet.address
+                    transfer['spent']
                 )
             else:
                 output.key_image = transfer['key_image']
@@ -134,7 +129,7 @@ class BlockchainUtils:
             pubkey = out_json['key']
             output = self.dao.get_output(pubkey)
             if output is None:
-                output = Output(pubkey, None, None, index, None, None, None, None, None)
+                output = Output(pubkey, None, None, index, None, None, None)
             outs.append(output)
         return outs
 
