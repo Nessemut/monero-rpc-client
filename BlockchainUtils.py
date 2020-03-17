@@ -102,7 +102,6 @@ class BlockchainUtils:
                 output.key_image = transfer['key_image']
                 output.amount = transfer['amount'],
                 output.index = transfer['global_index'],
-                output.recipient = self.wallet.address,
                 output.spent = transfer['spent']
             output_array.append(output)
         self.dao.save_outputs(output_array)
