@@ -78,7 +78,6 @@ class BlockchainUtils:
                     output.amount = out['amount']
                     output.coinbase = True
                     output.ringct = False
-                    output.sender = sender
                 output_array.append(output)
         self.dao.save_outputs(output_array)
 
