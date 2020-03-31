@@ -8,6 +8,14 @@ class Dao:
     def __init__(self, engine):
         self.engine = engine
 
+    def get_output(self, key):
+        session = sessionmaker()
+        session.configure(bind=self.engine)
+        s = session()
+        out = s.query(Output).get(key)
+        s.close()
+        return out
+
     def save_outputs(self, outputs):
         session = sessionmaker()
         session.configure(bind=self.engine)
@@ -22,6 +30,14 @@ class Dao:
 
         s.close()
 
+    def get_ring(self, ki):
+        session = sessionmaker()
+        session.configure(bind=self.engine)
+        s = session()
+        ring = s.query(Ring).get(ki)
+        s.close()
+        return ring
+
     def save_ring(self, ring):
         session = sessionmaker()
         session.configure(bind=self.engine)
@@ -34,18 +50,27 @@ class Dao:
 
         s.close()
 
-    def get_ring(self, ki):
+    def get_known_outputs(self):
         session = sessionmaker()
         session.configure(bind=self.engine)
         s = session()
-        ring = s.query(Ring).get(ki)
+        outs = s.query(Output).order_by(Output.key).filter(Output.key_image.isnot(None))
         s.close()
-        return ring
+        return outs
 
-    def get_output(self, key):
+    def get_rings(self, first_block):
+        # NOTE: this takes an insane amount of time to complete
         session = sessionmaker()
         session.configure(bind=self.engine)
         s = session()
-        out = s.query(Output).get(key)
+        rings = s.query(Ring).filter(Ring.height > first_block).all()
         s.close()
-        return out
+        return rings
+
+    def get_own_key_images(self):
+        session = sessionmaker()
+        session.configure(bind=self.engine)
+        s = session()
+        key_images = s.query(Output.key_image).filter(Output.key_image.isnot(None)).all()
+        s.close()
+        return key_images
