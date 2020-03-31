@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from dao import Dao
 import config
 from gc import collect
+from automatization_steps import Steps
 
 network = STAGENET
 
@@ -14,34 +15,7 @@ wallet = WalletRpcClient(network)
 engine = create_engine('mysql+pymysql://{}@{}/{}'.format(config.MYSQL_USER, config.MYSQL_URL, network.mysql_schema))
 dao = Dao(engine)
 bcutil = BlockchainUtils(wallet, daemon, network, dao)
+steps = Steps(bcutil, wallet)
 
-
-def inject(n):
-    for i in range(0, n):
-        bcutil.send_one_nanonero_to_myself()
-        if i % 25 == 0:
-            wallet.rescan_blockchain()
-
-
-def persist_outputs():
-    height = int(bcutil.get_height())
-    interval = 5000
-    for i in range(0, height, interval):
-        blocks = bcutil.get_blockchain_array(i, i+interval-1)
-        bcutil.persist_coinbase_transactions(blocks)
-        collect()
-
-    bcutil.persist_incoming_transfers()
-
-
-def persist_rings():
-    height = int(bcutil.get_height())
-    interval = 10
-    for i in range(137000, height, interval):
-        blocks = bcutil.get_blockchain_array(i, i+interval-1)
-        bcutil.persist_rings(blocks)
-
-
-def get_blockchain():
-    blocks = bcutil.get_blockchain_array(None, None)
-    return blocks
+while True:
+    steps.inject(1000)
