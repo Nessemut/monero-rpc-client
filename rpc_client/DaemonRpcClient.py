@@ -77,15 +77,11 @@ class DaemonRpcClient(RpcClient):
     def get_outs(self, amount, index):
         if index is None:
             index = 0
-            ringct = True
-            coinbase = False
         try:
             if amount == 0:
                 res = self.post_other('/get_outs', {'outputs': [{'index': index}]})
             else:
                 res = self.post_other('/get_outs', {'outputs': [{'amount': amount, 'index': index}]})
-            ringct = None
-            coinbase = None
         except KeyError:
             return None
         try:
