@@ -22,11 +22,6 @@ class Output(Base):
     coinbase = Column(Boolean, nullable=True, default=None)
     ringct = Column(Boolean, nullable=True, default=None)
     spent = Column(Boolean, nullable=True, default=None)
-    rings = relationship(
-        "Ring",
-        secondary=association_table,
-        back_populates="outputs",
-        lazy='joined')
 
     def __init__(self, key, key_image, amount, index, coinbase, ringct, spent):
         self.key = key
@@ -49,7 +44,6 @@ class Ring(Base):
     outputs = relationship(
         "Output",
         secondary=association_table,
-        back_populates="rings",
         lazy='joined')
 
     def __init__(self, key_image, transaction, height):
