@@ -5,8 +5,9 @@ INTERVAL = 500
 
 class Steps:
 
-    def __init__(self, bcutil, wallet):
+    def __init__(self, bcutil, dao, wallet):
         self.bcutil = bcutil
+        self.dao = dao
         self.wallet = wallet
 
     def inject(self, n):
@@ -30,3 +31,13 @@ class Steps:
             blocks = self.bcutil.get_blockchain_array(i, i+INTERVAL-1)
             self.bcutil.persist_rings(blocks)
 
+    def mark_my_rings(self):
+        my_spent_outputs = self.dao.get_own_spent_outputs()
+        for output in my_spent_outputs:
+            try:
+                ring = self.dao.get_ring(output.key_image)
+                for ring_output in ring.outputs:
+                    self.dao.mark_output_in_ring(ring_output, ring, ring_output.key_image == output.key_image)
+            except AttributeError:
+                # NOTE: this exception might be thrown if the ring is not yet persisted
+                pass

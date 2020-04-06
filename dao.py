@@ -1,5 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
+from sqlalchemy.sql import text
 from model import Ring, Output
 
 
@@ -67,10 +68,28 @@ class Dao:
         s.close()
         return rings
 
-    def get_own_key_images(self):
+    def get_rings_in_tx(self, tx):
         session = sessionmaker()
         session.configure(bind=self.engine)
         s = session()
-        key_images = s.query(Output.key_image).filter(Output.key_image.isnot(None)).all()
+        rings = s.query(Ring).filter(Ring.transaction == tx).all()
+        s.close()
+        return rings
+
+    def get_own_spent_outputs(self):
+        session = sessionmaker()
+        session.configure(bind=self.engine)
+        s = session()
+        key_images = s.query(Output).filter(Output.key_image.isnot(None), Output.spent).all()
         s.close()
         return key_images
+
+    def mark_output_in_ring(self, output, ring, boolean_value):
+        pubkey = '"' + output.key + '"'
+        key_image = '"' + ring.key_image + '"'
+        con = self.engine.connect()
+        query = text("""
+            update association_table set `real`= """ + str(boolean_value) + """ 
+            where output_pubkey = """ + pubkey + """
+            and ring_ki = """ + key_image + """;""")
+        con.execute(query)

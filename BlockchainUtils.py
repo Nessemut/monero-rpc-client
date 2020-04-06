@@ -29,7 +29,6 @@ class BlockchainUtils:
 
         blocks = []
         print('Getting blockchain from height {} to {}'.format(first, last))
-        total = last-first
         try:
             for i in range(last-1, first, -1):
                 block = self.daemon.get_block(i)
@@ -137,3 +136,10 @@ class BlockchainUtils:
             print('Sent 1 piconero in tx ' + transfer['tx_hash'] + ' to myself')
         else:
             print('Could not send transaction')
+
+    def save_output_array(self, arr):
+        self.dao.save_outputs(arr)
+
+    def get_first_relevant_block(self):
+        # TODO: return first block with a known output
+        pass
