@@ -132,10 +132,7 @@ class BlockchainUtils:
 
     def send_one_nanonero_to_myself(self):
         transfer = self.wallet.transfer(1, 11, self.wallet.address)
-        if transfer is not None:
-            print('Sent 1 piconero in tx ' + transfer['tx_hash'] + ' to myself')
-        else:
-            print('Could not send transaction')
+        return transfer is not None
 
     def save_output_array(self, arr):
         self.dao.save_outputs(arr)
