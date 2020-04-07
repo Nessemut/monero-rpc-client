@@ -84,12 +84,13 @@ class Dao:
         s.close()
         return key_images
 
-    def mark_output_in_ring(self, output, ring, boolean_value):
+    def mark_output_in_ring(self, output, key_image, mark_as, mark_if_mine):
+        operator = '' if mark_if_mine else '!'
         pubkey = '"' + output.key + '"'
-        key_image = '"' + ring.key_image + '"'
+        key_image = '"' + key_image + '"'
         con = self.engine.connect()
         query = text("""
-            update association_table set `real`= """ + str(boolean_value) + """ 
+            update association_table set `real`= """ + str(mark_as) + """ 
             where output_pubkey = """ + pubkey + """
-            and ring_ki = """ + key_image + """;""")
+            and ring_ki""" + operator + """= """ + key_image + """;""")
         con.execute(query)

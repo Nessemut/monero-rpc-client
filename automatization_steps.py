@@ -37,7 +37,22 @@ class Steps:
             try:
                 ring = self.dao.get_ring(output.key_image)
                 for ring_output in ring.outputs:
-                    self.dao.mark_output_in_ring(ring_output, ring, ring_output.key_image == output.key_image)
+                    self.dao.mark_output_in_ring(
+                        ring_output,
+                        ring.key_image,
+                        ring_output.key_image == output.key_image,
+                        True
+                    )
             except AttributeError:
                 # NOTE: this exception might be thrown if the ring is not yet persisted
                 pass
+
+    def mark_my_outputs_in_other_rings(self):
+        my_outputs = self.dao.get_known_outputs()
+        for output in my_outputs:
+            self.dao.mark_output_in_ring(
+                output,
+                output.key_image,
+                False,
+                True
+            )
