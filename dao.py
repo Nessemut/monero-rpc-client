@@ -1,6 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from sqlalchemy.sql import text
+from sqlalchemy import func
 from model import Ring, Output
 
 
@@ -94,3 +95,11 @@ class Dao:
             where output_pubkey = """ + pubkey + """
             and ring_ki""" + operator + """= """ + key_image + """;""")
         con.execute(query)
+
+    def last_persisted_ring(self):
+        session = sessionmaker()
+        session.configure(bind=self.engine)
+        s = session()
+        last = int(s.query(func.max(Ring.height)).one()[0])
+        s.close()
+        return last
