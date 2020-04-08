@@ -1,7 +1,6 @@
 from model import Output, Ring
 from time import sleep
-import random
-from dao import Dao
+import logging
 
 
 class BlockchainUtils:
@@ -13,7 +12,7 @@ class BlockchainUtils:
         self.dao = dao
 
     def get_height(self):
-        return self.daemon.get_info()['height']
+        return int(self.daemon.get_info()['height'])
 
     def get_tx_count(self):
         return self.daemon.get_info()['tx_count']
@@ -28,7 +27,7 @@ class BlockchainUtils:
             last = height
 
         blocks = []
-        print('Getting blockchain from height {} to {}'.format(first, last))
+        logging.debug('Getting blockchain from height {} to {}'.format(first, last))
         try:
             for i in range(last-1, first, -1):
                 block = self.daemon.get_block(i)
