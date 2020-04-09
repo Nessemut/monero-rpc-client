@@ -13,7 +13,6 @@ class Steps:
         self.wallet = wallet
         self.working_height = self.bcutil.get_height()
         self.last_persisted_height = self.dao.last_persisted_ring()
-        logging.getLogger('Steps')
 
     def refresh_heights(self):
         self.working_height = self.bcutil.get_height()
@@ -24,11 +23,11 @@ class Steps:
         n = random.randrange(100, 10000)
         count = 0
         for i in range(0, n):
-            if self.bcutil.send_one_nanonero_to_myself():
+            if self.bcutil.send_one_piconero_to_myself():
                 count += 1
             if i % 25 == 0:
                 self.wallet.rescan_blockchain()
-        logging.info(str(count) + ' one nanonero outputs injected')
+        logging.info(str(count) + ' one piconero outputs injected')
 
     def persist_outputs(self):
         logging.info('Persisting outputs from height {} to {}'.format(self.last_persisted_height, self.working_height))

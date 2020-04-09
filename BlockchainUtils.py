@@ -129,7 +129,7 @@ class BlockchainUtils:
             outs.append(output)
         return outs
 
-    def send_one_nanonero_to_myself(self):
+    def send_one_piconero_to_myself(self):
         transfer = self.wallet.transfer(1, 11, self.wallet.address)
         return transfer is not None
 
