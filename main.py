@@ -1,7 +1,7 @@
 from rpc_client.DaemonRpcClient import DaemonRpcClient
 from rpc_client.WalletRpcClient import WalletRpcClient
 from BlockchainUtils import BlockchainUtils
-from networks import STAGENET
+from networks import NETWORK
 from sqlalchemy import create_engine
 from dao import Dao
 import config
@@ -9,7 +9,7 @@ from gc import collect
 from automatization_steps import Steps
 import logging
 
-network = STAGENET
+network = NETWORK
 
 daemon = DaemonRpcClient(network)
 wallet = WalletRpcClient(network)
