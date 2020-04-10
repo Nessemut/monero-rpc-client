@@ -31,10 +31,9 @@ def do_steps():
     steps.persist_rings()
     steps.mark_my_rings()
     steps.mark_my_outputs_in_other_rings()
-    # TODO: steps below not yet implemented
-    steps.mark_rings_by_process_of_elimination()
-    steps.mark_outputs_in_deduced_rings()
     steps.generate_report()
+    steps.mark_deducible_rings()
+
 
 try:
     while True:

@@ -1,6 +1,7 @@
-from gc import collect
 import logging
 import random
+from gc import collect
+import collections
 
 INTERVAL = 500
 
@@ -20,12 +21,12 @@ class Steps:
 
     def inject(self):
         logging.info('Injecting outputs')
-        n = random.randrange(100, 10000)
+        n = random.randrange(100, 5000)
         count = 0
         for i in range(0, n):
             if self.bcutil.send_one_piconero_to_myself():
                 count += 1
-            if i % 25 == 0:
+            if i % 100 == 0:
                 self.wallet.rescan_blockchain()
         logging.info(str(count) + ' one piconero outputs injected')
 
@@ -72,13 +73,24 @@ class Steps:
                 False
             )
 
-    def mark_rings_by_process_of_elimination(self):
-        # logging.info('Searching for rings to mark by process of elimination')
-        # logging.info('{} new rings deduced')
-        pass
-
-    def mark_outputs_from_deduced_rings(self):
-        pass
-
     def generate_report(self):
+        report = {}
+        key_images = self.dao.other_rings_with_at_least_one_own_decoy()
+
+        for ki in key_images:
+            remaining = self.dao.get_remaining_outputs_from_ring_with_decoys(ki[0])
+            if remaining not in report:
+                report[remaining] = 1
+            else:
+                report[remaining] = report[remaining] + 1
+
+        report = collections.OrderedDict(sorted(report.items()))
+        output_line = 'Reporting found rings with known decoys:'
+        for key in report:
+            output_line = output_line + '\n\t {} rings with {} outputs remaining to be deducible'\
+                .format(report[key], key)
+        logging.info(output_line)
+
+    def mark_deducible_rings(self):
+        # TODO: implement this when some deducible rings are found
         pass

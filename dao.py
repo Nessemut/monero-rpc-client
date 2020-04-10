@@ -93,7 +93,8 @@ class Dao:
         query = text("""
             update association_table set `real`= """ + str(mark_as) + """ 
             where output_pubkey = """ + pubkey + """
-            and ring_ki""" + operator + """= """ + key_image + """;""")
+            and ring_ki""" + operator + """= """ + key_image + """;
+        """)
         con.execute(query)
 
     def last_persisted_ring(self):
@@ -103,3 +104,22 @@ class Dao:
         last = int(s.query(func.max(Ring.height)).one()[0])
         s.close()
         return last
+
+    def other_rings_with_at_least_one_own_decoy(self):
+        con = self.engine.connect()
+        query = text("""
+            select key_image from ring 
+            where ring.key_image not in (select key_image from output where output.key_image is not null)
+            and ring.key_image in (select ring_ki from association_table where `real` = 0);
+        """)
+        key_images = con.execute(query).fetchall()
+        return key_images
+
+    def get_remaining_outputs_from_ring_with_decoys(self, key_image):
+        key_image = '"' + key_image + '"'
+        con = self.engine.connect()
+        query = text("""select count(*) from association_table where ring_ki = """ + key_image + """;""")
+        total = con.execute(query).fetchone()[0]
+        query = text("""select count(`real`) from association_table where ring_ki = """ + key_image + """;""")
+        decoys = con.execute(query).fetchone()[0]
+        return total - decoys - 1
