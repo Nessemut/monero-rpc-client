@@ -1,7 +1,7 @@
+import collections
 import logging
 import random
 from gc import collect
-import collections
 
 INTERVAL = 500
 

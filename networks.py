@@ -1,6 +1,5 @@
-from NetType import NetType
 import config
-
+from NetType import NetType
 
 MAINNET = NetType(
     config.MAINNET_NODE,

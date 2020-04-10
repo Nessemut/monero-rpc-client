@@ -1,6 +1,7 @@
-from model import Output, Ring
-from time import sleep
 import logging
+from time import sleep
+
+from model import Output, Ring
 
 
 class BlockchainUtils:
@@ -32,7 +33,6 @@ class BlockchainUtils:
             for i in range(last-1, first, -1):
                 block = self.daemon.get_block(i)
                 blocks.append(block)
-            print('Finished')
         except KeyboardInterrupt:
             pass
 

@@ -1,7 +1,8 @@
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from sqlalchemy.sql import text
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import text
+
 from model import Ring, Output
 
 

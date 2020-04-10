@@ -1,13 +1,14 @@
+import logging
+
+from sqlalchemy import create_engine
+
+import config
+from BlockchainUtils import BlockchainUtils
+from automatization_steps import Steps
+from dao import Dao
+from networks import NETWORK
 from rpc_client.DaemonRpcClient import DaemonRpcClient
 from rpc_client.WalletRpcClient import WalletRpcClient
-from BlockchainUtils import BlockchainUtils
-from networks import NETWORK
-from sqlalchemy import create_engine
-from dao import Dao
-import config
-from gc import collect
-from automatization_steps import Steps
-import logging
 
 network = NETWORK
 
