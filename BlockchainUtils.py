@@ -1,6 +1,8 @@
 import logging
 from time import sleep
 
+import matplotlib.pyplot as plt
+
 from model import Output, Ring
 
 
@@ -136,6 +138,35 @@ class BlockchainUtils:
     def save_output_array(self, arr):
         self.dao.save_outputs(arr)
 
-    def get_first_relevant_block(self):
-        # TODO: return first block with a known output
-        pass
+    def plot_real_output_index_distribution(self):
+        distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0}
+
+        outputs = self.dao.get_known_outputs()
+        print(len(outputs))
+        rings = []
+
+        for output in outputs:
+            ring = self.dao.get_ring(output.key_image)
+            if ring is not None:
+
+                heights = []
+                for ring_output in ring.outputs:
+                    height = self.daemon.get_outs(None, ring_output.idx)['height']
+                    heights.append(height)
+                    if ring_output.key_image == ring.key_image:
+                        real_height = height
+                ring_tuple = (heights, real_height)
+            rings.append(ring_tuple)
+
+        for ring in rings:
+            ring[0].sort()
+            index = ring[0].index(ring[1]) + 1
+            distribution[index] += 1
+
+        plt.bar(range(len(distribution)), list(distribution.values()), align='center')
+        plt.xticks(range(11), list(distribution.keys()))
+
+        plt.ylabel('Cantidad de anillos')
+        plt.xlabel('Orden de antigüedad del output real')
+
+        plt.show()

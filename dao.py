@@ -57,7 +57,7 @@ class Dao:
         session = sessionmaker()
         session.configure(bind=self.engine)
         s = session()
-        outs = s.query(Output).order_by(Output.key).filter(Output.key_image.isnot(None))
+        outs = s.query(Output).order_by(Output.key).filter(Output.key_image.isnot(None)).all()
         s.close()
         return outs
 
