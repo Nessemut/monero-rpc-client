@@ -139,9 +139,11 @@ class BlockchainUtils:
         self.dao.save_outputs(arr)
 
     def plot_real_output_index_distribution(self):
+        logging.info('Plotting real output distribution')
         distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0}
 
         outputs = self.dao.get_known_outputs()
+
         rings = []
 
         for output in outputs:
@@ -157,10 +159,14 @@ class BlockchainUtils:
                 ring_tuple = (heights, real_height)
             rings.append(ring_tuple)
 
+        logging.info(str(len(rings)) + ' own rings found')
+
         for ring in rings:
             ring[0].sort()
             index = ring[0].index(ring[1]) + 1
             distribution[index] += 1
+
+        logging.info('Output age distribution in known rings is ' + str(distribution))
 
         plt.bar(range(len(distribution)), list(distribution.values()), align='center')
         plt.xticks(range(11), list(distribution.keys()))

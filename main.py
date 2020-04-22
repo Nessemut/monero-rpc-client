@@ -32,8 +32,9 @@ def do_steps():
     steps.persist_rings()
     steps.mark_my_rings()
     steps.mark_my_outputs_in_other_rings()
-    steps.generate_report()
-    steps.mark_deducible_rings()
+    deducibility = steps.find_output_deducibility(False)
+    if deducibility is not None:
+        steps.mark_deducible_rings()
 
 
 try:
