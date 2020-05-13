@@ -1,3 +1,4 @@
+import csv
 import logging
 from time import sleep
 
@@ -175,3 +176,35 @@ class BlockchainUtils:
         plt.xlabel('Orden de antigüedad del output real')
 
         plt.show()
+
+    def write_output_age_distribution_dataset(self):
+        outputs = self.dao.get_own_spent_outputs()
+        dataset = []
+
+        for output in outputs:
+            ring = self.dao.get_ring(output.key_image)
+            if ring is not None:
+                line = [ring.height]
+                heights = []
+                for ring_output in ring.outputs:
+                    height = self.daemon.get_outs(None, ring_output.idx)['height']
+                    heights.append(height)
+                    if ring_output.key_image == ring.key_image:
+                        real_height = height
+                    heights.sort()
+                marked = False
+                for height in heights:
+                    line.append(height)
+                    if height == real_height and not marked:
+                        line.append(1)
+                        marked = True
+                    else:
+                        line.append(0)
+
+                index = heights.index(real_height) + 1
+                line.append(index)
+                dataset.append(line)
+
+        with open(self.network.dataset_dir + 'dataset_{}.csv'.format(len(dataset)), 'w') as file:
+            writer = csv.writer(file)
+            writer.writerows(dataset)

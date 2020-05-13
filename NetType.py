@@ -8,6 +8,7 @@ class NetType:
         self.wallet_url = wallet_url
         self.wallet_dir = base_dir + '/wallets/'
         self.wallet_rpc_log_dir = base_dir + '/wallet-rpc-logs/'
+        self.dataset_dir = base_dir + '/datasets/'
         self.address_book = self.load_address_book()
         self.mysql_schema = mysql_schema
 
