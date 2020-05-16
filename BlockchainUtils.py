@@ -1,7 +1,7 @@
 import csv
 import logging
 from time import sleep
-
+from collections import OrderedDict
 import matplotlib.pyplot as plt
 
 from model import Output, Ring
@@ -179,6 +179,27 @@ class BlockchainUtils:
 
     def write_output_age_distribution_dataset(self):
         outputs = self.dao.get_own_spent_outputs()
+        own_outputs = self.dao.get_known_outputs()
+
+        keys = []
+        for output in own_outputs:
+            keys.append(output.key)
+
+        header = [
+            'tx_h',
+            'out1_h', 'out1_rv',
+            'out2_h', 'out2_rv',
+            'out3_h', 'out3_rv',
+            'out4_h', 'out4_rv',
+            'out5_h', 'out5_rv',
+            'out6_h', 'out6_rv',
+            'out7_h', 'out7_rv',
+            'out8_h', 'out8_rv',
+            'out9_h', 'out9_rv',
+            'out10_h', 'out10_rv',
+            'out11_h', 'out11_rv',
+            'real'
+        ]
         dataset = []
 
         for output in outputs:
@@ -186,25 +207,29 @@ class BlockchainUtils:
             if ring is not None:
                 line = [ring.height]
                 heights = []
+                out_heights = OrderedDict()
                 for ring_output in ring.outputs:
                     height = self.daemon.get_outs(None, ring_output.idx)['height']
                     heights.append(height)
+                    if height not in out_heights:
+                        out_heights.update({height: [ring_output.key]})
+                    else:
+                        out_heights[height].append(ring_output.key)
                     if ring_output.key_image == ring.key_image:
                         real_height = height
-                    heights.sort()
-                marked = False
-                for height in heights:
-                    line.append(height)
-                    if height == real_height and not marked:
-                        line.append(1)
-                        marked = True
-                    else:
-                        line.append(0)
+                        real_out_key = ring_output.key
+                heights.sort()
+                for height in sorted(out_heights.keys()):
+                    for height_output in out_heights[height]:
+                        line.append(height)
+                        line.append(0 if height_output in keys and height_output != real_out_key else 1)
 
                 index = heights.index(real_height) + 1
                 line.append(index)
                 dataset.append(line)
 
-        with open(self.network.dataset_dir + 'dataset_{}.csv'.format(len(dataset)), 'w') as file:
+        filename = self.network.dataset_dir + 'ds_{}r_h{}_train.csv'.format(len(dataset), self.get_height())
+        with open(filename, 'w') as file:
             writer = csv.writer(file)
+            writer.writerow(header)
             writer.writerows(dataset)
