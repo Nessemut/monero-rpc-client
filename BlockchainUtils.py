@@ -233,3 +233,53 @@ class BlockchainUtils:
             writer = csv.writer(file)
             writer.writerow(header)
             writer.writerows(dataset)
+
+    def write_output_age_distribution_dataset_unknown_rings(self, first_height):
+        all_rings = self.dao.get_rings(first_height)
+        own_outputs = self.dao.get_known_outputs()
+
+        key_images = []
+        for output in own_outputs:
+            key_images.append(output.key_image)
+
+        header = [
+            'tx_h',
+            'out1_h', 'out1_rv',
+            'out2_h', 'out2_rv',
+            'out3_h', 'out3_rv',
+            'out4_h', 'out4_rv',
+            'out5_h', 'out5_rv',
+            'out6_h', 'out6_rv',
+            'out7_h', 'out7_rv',
+            'out8_h', 'out8_rv',
+            'out9_h', 'out9_rv',
+            'out10_h', 'out10_rv',
+            'out11_h', 'out11_rv'
+        ]
+        dataset = []
+
+        for ring in all_rings:
+            if ring.key_image not in key_images:
+                line = [ring.height]
+                heights = []
+                out_heights = OrderedDict()
+                for ring_output in ring.outputs:
+                    height = self.daemon.get_outs(None, ring_output.idx)['height']
+                    heights.append(height)
+                    if height not in out_heights:
+                        out_heights.update({height: [ring_output.key_image]})
+                    else:
+                        out_heights[height].append(ring_output.key)
+
+                for height in sorted(out_heights.keys()):
+                    for height_output in out_heights[height]:
+                        line.append(height)
+                        line.append(1 if height_output is None else 0)
+
+                dataset.append(line)
+
+        filename = self.network.dataset_dir + 'ds_{}r_h{}_unknown.csv'.format(len(dataset), self.get_height())
+        with open(filename, 'w') as file:
+            writer = csv.writer(file)
+            writer.writerow(header)
+            writer.writerows(dataset)
