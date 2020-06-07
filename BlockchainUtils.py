@@ -178,6 +178,7 @@ class BlockchainUtils:
         plt.show()
 
     def write_output_age_distribution_dataset(self):
+        logging.info('Writing dataset')
         outputs = self.dao.get_own_spent_outputs()
         own_outputs = self.dao.get_known_outputs()
 
@@ -233,6 +234,7 @@ class BlockchainUtils:
             writer = csv.writer(file)
             writer.writerow(header)
             writer.writerows(dataset)
+        logging.info('File {} correctly written'.format(filename))
 
     def write_output_age_distribution_dataset_unknown_rings(self, first_height):
         all_rings = self.dao.get_rings(first_height)
@@ -283,3 +285,4 @@ class BlockchainUtils:
             writer = csv.writer(file)
             writer.writerow(header)
             writer.writerows(dataset)
+        logging.info('File {} correctly written'.format(filename))

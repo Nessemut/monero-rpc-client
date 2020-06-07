@@ -22,14 +22,15 @@ class Steps:
 
     def inject(self):
         logging.info('Injecting outputs')
-        n = 5000
         count = 0
-        for i in range(0, n):
-            if self.bcutil.send_one_piconero_to_myself():
-                count += 1
-            if i % 25 == 0:
-                self.wallet.rescan_blockchain()
-        logging.info(str(count) + ' one piconero outputs injected')
+        try:
+            while True:
+                if self.bcutil.send_one_piconero_to_myself():
+                    count += 1
+                if count % 25 == 0:
+                    self.wallet.rescan_blockchain()
+        except KeyboardInterrupt:
+            logging.info(str(count) + ' one piconero outputs injected')
 
     def persist_outputs(self):
         logging.info('Persisting outputs from height {} to {}'.format(self.last_persisted_height, self.working_height))

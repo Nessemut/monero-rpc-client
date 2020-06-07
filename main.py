@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from sqlalchemy import create_engine
 
@@ -25,9 +26,7 @@ logger.getLogger(__name__)
 
 logger.info('Monero RPC Client started')
 
-
-def do_steps():
-    steps.inject()
+def dataset_generation_steps():
     steps.persist_outputs()
     steps.persist_rings()
     steps.mark_my_rings()
@@ -35,11 +34,14 @@ def do_steps():
     deducibility = steps.find_output_deducibility(False)
     if deducibility is not None:
         steps.mark_deducible_rings()
+    bcutil.write_output_age_distribution_dataset()
 
 
-try:
-    while True:
-        do_steps()
-        steps.refresh_heights()
-except KeyboardInterrupt:
-    pass
+args = sys.argv
+if len(args) > 1 and args[1] == 'dataset':
+    try:
+        dataset_generation_steps()
+    except KeyboardInterrupt:
+        pass
+
+steps.inject()
