@@ -34,14 +34,15 @@ def dataset_generation_steps():
     deducibility = steps.find_output_deducibility(False)
     if deducibility is not None:
         steps.mark_deducible_rings()
-    bcutil.write_output_age_distribution_dataset()
 
 
 args = sys.argv
-if len(args) > 1 and args[1] == 'dataset':
-    try:
-        dataset_generation_steps()
-    except KeyboardInterrupt:
-        pass
+try:
+    if 'dataset' in args:
+        if 'only' not in args:
+            dataset_generation_steps()
+        bcutil.write_output_age_distribution_dataset()
+except KeyboardInterrupt:
+    pass
 
 steps.inject()
