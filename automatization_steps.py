@@ -33,7 +33,7 @@ class Steps:
             logging.info(str(count) + ' one piconero outputs injected')
 
     def persist_outputs(self):
-        logging.info('Persisting outputs from height {} to {}'.format(self.last_persisted_height, self.working_height))
+        logging.info('Saving outputs from height {} to {}'.format(self.last_persisted_height, self.working_height))
         for i in range(self.last_persisted_height, self.working_height, INTERVAL):
             blocks = self.bcutil.get_blockchain_array(i, i+INTERVAL-1)
             self.bcutil.persist_coinbase_transactions(blocks)
@@ -42,7 +42,7 @@ class Steps:
         self.bcutil.persist_incoming_transfers()
 
     def persist_rings(self):
-        logging.info('Persisting rings from height {} to {}'.format(self.last_persisted_height, self.working_height))
+        logging.info('Saving rings from height {} to {}'.format(self.last_persisted_height, self.working_height))
         for i in range(self.last_persisted_height, self.working_height, INTERVAL):
             blocks = self.bcutil.get_blockchain_array(i, i+INTERVAL-1)
             self.bcutil.persist_rings(blocks)
@@ -76,6 +76,8 @@ class Steps:
             )
 
     def find_output_deducibility(self, plot):
+        # TODO: move this plotting logic somewhere else
+
         logging.info('Looking for foreign rings with known outputs')
 
         report = {}

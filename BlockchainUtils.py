@@ -140,6 +140,8 @@ class BlockchainUtils:
         self.dao.save_outputs(arr)
 
     def plot_real_output_index_distribution(self):
+        # TODO: move this plotting logic somewhere else
+
         logging.info('Plotting real output distribution')
         distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0}
 
@@ -178,6 +180,9 @@ class BlockchainUtils:
         plt.show()
 
     def write_output_age_distribution_dataset(self):
+        # TODO: fix zeros bug
+        # TODO: pretty sure there's a better way to do this
+
         logging.info('Writing dataset')
         outputs = self.dao.get_own_spent_outputs()
         own_outputs = self.dao.get_known_outputs()
@@ -237,6 +242,8 @@ class BlockchainUtils:
         logging.info('File {} correctly written'.format(filename))
 
     def write_output_age_distribution_dataset_unknown_rings(self, first_height):
+        # NOTE: not sure we'll be needing this
+
         all_rings = self.dao.get_rings(first_height)
         own_outputs = self.dao.get_known_outputs()
 
