@@ -3,7 +3,7 @@ import logging
 from time import sleep
 from collections import OrderedDict
 import matplotlib.pyplot as plt
-
+import random
 from model import Output, Ring
 
 
@@ -33,7 +33,7 @@ class BlockchainUtils:
         blocks = []
         logging.debug('Getting blockchain from height {} to {}'.format(first, last))
         try:
-            for i in range(last-1, first, -1):
+            for i in range(last - 1, first, -1):
                 block = self.daemon.get_block(i)
                 blocks.append(block)
         except KeyboardInterrupt:
@@ -45,7 +45,7 @@ class BlockchainUtils:
     def get_indexes_from_offsets_array(array):
         for i in range(0, len(array)):
             if i != 0:
-                array[i] = array[i] + array[i-1]
+                array[i] = array[i] + array[i - 1]
         return array
 
     def execute_once_a_block(self, function):
@@ -132,8 +132,8 @@ class BlockchainUtils:
             outs.append(output)
         return outs
 
-    def send_one_piconero_to_myself(self):
-        transfer = self.wallet.transfer(1, 11, self.wallet.address)
+    def send_piconeros_to_myself(self):
+        transfer = self.wallet.transfer(random.randint(0, 100), 11, self.wallet.address)
         return transfer is not None
 
     def save_output_array(self, arr):
