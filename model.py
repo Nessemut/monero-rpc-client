@@ -50,3 +50,15 @@ class Ring(Base):
         self.key_image = key_image
         self.transaction = transaction
         self.height = height
+
+
+class WalletAddress(Base):
+    __tablename__ = 'wallet'
+    address = Column(String, primary_key=True, unique=True, nullable=False)
+    pub_spend_key = Column(String)
+    priv_spend_key = Column(String)
+    pub_view_key = Column(String)
+    priv_view_key = Column(String)
+
+    def __init__(self, address):
+        self.address = address
