@@ -15,7 +15,9 @@ network = NETWORK
 
 daemon = DaemonRpcClient(network)
 wallet = WalletRpcClient(network)
-engine = create_engine('mysql+pymysql://{}@{}/{}'.format(config.MYSQL_USER, config.MYSQL_URL, network.mysql_schema))
+engine = create_engine('mysql+pymysql://{}:{}@{}/{}'.format(
+    config.MYSQL_USER, config.MYSQL_PASSWORD, config.MYSQL_URL, network.mysql_schema)
+)
 dao = Dao(engine)
 bcutil = BlockchainUtils(wallet, daemon, network, dao)
 steps = Steps(bcutil, dao, wallet)
