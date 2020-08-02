@@ -102,7 +102,10 @@ class Dao:
         session = sessionmaker()
         session.configure(bind=self.engine)
         s = session()
-        last = int(s.query(func.max(Ring.height)).one()[0])
+        try:
+            last = int(s.query(func.max(Ring.height)).one()[0])
+        except TypeError:
+            last = 0
         s.close()
         return last
 
